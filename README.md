@@ -1,153 +1,103 @@
-TensorFlow GPU Setup on Windows Native (RTX 3090)
-TensorFlow 2.10 — Last Version Supporting GPU on Windows Native
+<div align="center">
 
-⚠️ Important:
-TensorFlow 2.10 is the last version that supports GPU on native Windows.
-Anything above 2.10 will NOT detect the GPU unless using WSL2 or DirectML.
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Tensorflow_logo.svg" alt="TensorFlow Logo" width="120"/>
 
-📌 Overview
+# TensorFlow-GPU-Setup-on-Windows-Native-RTX-3090
+### TensorFlow 2.10 • Python 3.9 • CUDA 11.2 • cuDNN 8.1 • Windows Native  
+(Your system already has CUDA 12.4 — this setup still works.)
 
-This guide explains how to install TensorFlow 2.10 GPU on Windows Native, using:
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.10-FF6F00?logo=tensorflow)](https://www.tensorflow.org/)
+[![Python](https://img.shields.io/badge/Python-3.9-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![CUDA](https://img.shields.io/badge/CUDA-11.2-76B900?logo=nvidia)](https://developer.nvidia.com/cuda-toolkit)
+[![cuDNN](https://img.shields.io/badge/cuDNN-8.1.0-76B900?logo=nvidia)](https://developer.nvidia.com/cudnn)
+[![Platform](https://img.shields.io/badge/Windows-Native-0078D6?logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 
-NVIDIA RTX 3090 (Compute Capability 8.6)
+</div>
 
-Windows 10/11 (64-bit)
+---
 
-System CUDA 12.4 + Latest NVIDIA Drivers (does NOT affect conda setup)
+## ⚠️ Important Notice
+> **TensorFlow 2.10 is the LAST version that supports GPU on Windows Native.**  
+> TensorFlow 2.11+ **WILL NOT** use your GPU unless you use WSL2.
 
-Conda environment with CUDA 11.2 + cuDNN 8.1
+---
 
-TensorFlow requires exact versions to work on Windows GPU.
+## 📌 System Overview
 
-Component	Required Version
-CUDA Toolkit	11.2
-cuDNN	8.1.0
-Python	3.9
-TensorFlow	2.10
-🚀 Installation Guide (Step-by-Step)
-1️⃣ Install Microsoft Visual C++ Redistributable
+| Component | Requirement |
+|----------|-------------|
+| **GPU** | NVIDIA RTX 3090 (Compute Capability 8.6) |
+| **Python** | 3.9 |
+| **CUDA Toolkit** | 11.2 (installed inside Conda) |
+| **cuDNN** | 8.1.0 |
+| **TensorFlow** | 2.10 |
+| **Windows** | Windows 10/11 (64-bit) |
 
-TensorFlow on Windows requires the MSVC runtime.
+> 💡 **NOTE:** Your system CUDA **12.4** does *not* affect TensorFlow installed inside Conda.
 
-Download & install:
-Microsoft Visual C++ Redistributable (2015–2022)
+---
 
-2️⃣ Install Miniconda
+## 🚀 Installation Steps
 
-Download Miniconda for Windows:
-https://docs.conda.io/en/latest/miniconda.html
+---
 
-Install using default settings.
+### 1️⃣ Install Microsoft Visual C++ Redistributable  
+Required for TensorFlow runtime.
 
-3️⃣ Create a Dedicated TensorFlow Environment
+📥 Download →  
+**https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist**
+
+---
+
+### 2️⃣ Install Miniconda (Recommended)
+📥 Download Miniconda →  
+**https://docs.conda.io/en/latest/miniconda.html**
+
+Install with default settings.
+
+---
+
+### 3️⃣ Create Conda Environment for TensorFlow
+
+```bash
 conda create --name tf python=3.9
 conda activate tf
+```
 
-4️⃣ Install CUDA 11.2 & cuDNN 8.1 Inside Conda
+### 4️⃣ Install CUDA 11.2 + cuDNN 8.1 (Inside Conda)
 
-These versions are required specifically for TensorFlow 2.10 GPU:
+These are the versions TensorFlow 2.10 specifically requires.
 
+```bash
 conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
+```
+
+### 5️⃣ Upgrade Pip
 
 
-✔ No conflict with your system CUDA (12.4).
-✔ Everything remains isolated inside the environment.
-
-5️⃣ Install TensorFlow 2.10 (GPU — Last Supported Version)
-
-Update pip first:
-
+```bash
 pip install --upgrade pip
+```
 
+---
 
-Install TensorFlow:
+### 6️⃣ Install TensorFlow 2.10 (GPU)
 
+Install using **pip** — NOT conda.
+
+```bash
 pip install "tensorflow<2.11"
+```
 
+### 7️⃣ Fix ptxas.exe / NVCC Not Found Error
 
-This ensures TensorFlow 2.10 GPU is installed.
+If TensorFlow shows errors like:
+ptxas.exe not found, NVCC missing, GPU kernels cannot compile
 
-6️⃣ Fix the ptxas.exe Missing Error
+Install CUDA-NVCC inside Conda:
 
-If you see:
-
-ptxas.exe not found
-
-Could not find ptxas
-
-GPU fails to compile kernels
-
-Install NVCC inside the environment:
-
+```bash
 conda install -c nvidia cuda-nvcc
+```
+This provides ptxas.exe, required for GPU kernel compilation.
 
-
-This installs the required ptxas.exe.
-
-7️⃣ Verify Installation
-✔️ CPU Test
-python -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
-
-
-A tensor output means TensorFlow works.
-
-✔️ GPU Detection Test
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-
-
-Expected:
-
-[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
-
-
-If empty → GPU was not detected.
-
-🖥️ System Requirements
-✔️ Supported GPUs
-
-TensorFlow GPU on Windows supports compute capability ≥ 3.5.
-RTX 3090 = Compute Capability 8.6 → Fully supported.
-
-✔️ Supported OS
-
-Windows 10 64-bit
-
-Windows 11 64-bit
-
-⚠ Notes & Limitations
-❗ System CUDA (12.x) does NOT matter
-
-TensorFlow uses the conda CUDA:
-
-CUDA 11.2
-
-cuDNN 8.1
-
-System CUDA is ignored.
-
-❗ Do NOT install TensorFlow from Conda
-
-Always install via pip:
-
-Conda builds may be old
-
-GPU support may be missing
-
-❗ GPU Support Removed After TF 2.10
-
-To use TensorFlow ≥ 2.11 with GPU, you must switch to:
-
-Linux
-
-WSL2
-
-TensorFlow-DirectML (not recommended for training)
-
-💡 Final Environment Summary
-Component	Version
-Python	3.9
-TensorFlow	2.10
-CUDA Toolkit	11.2
-cuDNN	8.1
-NVCC / ptxas	Installed via cuda-nvcc
-GPU	NVIDIA RTX 3090
