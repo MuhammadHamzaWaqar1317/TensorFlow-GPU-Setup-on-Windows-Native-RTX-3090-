@@ -101,3 +101,45 @@ conda install -c nvidia cuda-nvcc
 ```
 This provides ptxas.exe, required for GPU kernel compilation.
 
+### ✅ Verification
+
+✔ CPU Test
+
+```bash
+python -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
+```
+You should see a numeric tensor value.
+
+✔ GPU Detection Test
+
+```bash
+python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+```
+Expected output:
+```bash
+[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+```
+If this list is empty, TensorFlow could not detect your GPU.
+
+---
+
+## 🖥 Environment Summary
+
+| Component | Version |
+|----------|-------------|
+| **Python** | 3.9 |
+| **TensorFlow** | 2.10 |
+| **CUDA Toolkit** | 11.2 (installed inside Conda) |
+| **cuDNN** | 8.1.0 |
+| **NVCC / ptxas** | Installed using cuda-nvcc |
+| **GPU** | RTX 3090 |
+
+
+---
+
+## ⚠ Notes & Limitations
+
+- System CUDA (12.x) **does NOT affect** TensorFlow inside Conda.
+- TensorFlow versions **> 2.10 do NOT support GPU** on Windows Native.
+- For TF 2.11+ GPU support, you must use **WSL2 or Linux**.
+- Do **NOT** install TensorFlow using Conda — always use **pip**.
